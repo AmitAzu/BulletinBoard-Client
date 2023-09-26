@@ -8,17 +8,32 @@
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
-    }
-}
+    @State var selectedTab: Int = 0
+    var locationService: LocationService
+    var networkService: NetworkService
 
-#Preview {
-    ContentView()
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            HomeView(viewModel: BulletinViewModel.shared)
+                .tabItem {
+                    Label("Home", systemImage: "house.fill")
+                }
+                .tag(0)
+            MapView(viewModel: BulletinViewModel.shared)
+                .tabItem {
+                    Label("Map", systemImage: "map.fill")
+                }
+                .tag(1)
+            CreateNewBulletinView(viewModel: BulletinViewModel.shared, selectedTab: $selectedTab)
+                .tabItem {
+                    Label("New Bulletin", systemImage: "plus.circle.fill")
+                }
+                .tag(2)
+        }
+        .onAppear {
+            UITabBar.appearance().backgroundColor = UIColor.secondary
+            UITabBar.appearance().unselectedItemTintColor = UIColor.primaryText
+        }
+        .accentColor(Color.accentColor)
+    }
 }

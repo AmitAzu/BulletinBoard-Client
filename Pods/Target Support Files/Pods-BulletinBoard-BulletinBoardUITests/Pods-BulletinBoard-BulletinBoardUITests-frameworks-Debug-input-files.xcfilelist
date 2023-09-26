@@ -1,0 +1,3 @@
+${PODS_ROOT}/Target Support Files/Pods-BulletinBoard-BulletinBoardUITests/Pods-BulletinBoard-BulletinBoardUITests-frameworks.sh
+${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework
+${BUILT_PRODUCTS_DIR}/SDWebImageSwiftUI/SDWebImageSwiftUI.framework

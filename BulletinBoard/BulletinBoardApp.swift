@@ -6,12 +6,23 @@
 //
 
 import SwiftUI
+import GoogleMaps
+import SDWebImage
 
 @main
 struct BulletinBoardApp: App {
+    @StateObject var locationService = LocationService()
+    @StateObject var networkService = NetworkService()
+    
+    init() {
+        GMSServices.provideAPIKey("AIzaSyDqgmpR3d_fmhnpVR9tZot4icKinlAdDtk")
+    }
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(locationService: locationService,
+                        networkService: networkService)
+            .preferredColorScheme(.dark)
         }
     }
 }
