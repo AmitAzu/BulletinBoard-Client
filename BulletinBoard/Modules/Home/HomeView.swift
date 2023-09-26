@@ -39,16 +39,25 @@ struct HomeView: View {
                                 .scaledToFit()
                                 .frame(width: frame, height: frame)
                                 .cornerRadius(10)
-                            
                             VStack(alignment: .leading, spacing: 8) {
-                                Text("Title: \(bulletin.title)")
-                                    .font(.headline)
-                                Text("Body: \(bulletin.body)")
-                                    .font(.body)
-                                Text("User: \(bulletin.userName)")
-                                    .font(.subheadline)
-                                Text("Location: \(bulletin.geo.lat), \(bulletin.geo.lng)")
-                                    .font(.subheadline)
+                                HStack(alignment: .top) {
+                                    Text("Title:")
+                                        .font(.headline)
+                                    Text("\(bulletin.title)")
+                                        .font(.subheadline)
+                                }
+                                HStack(alignment: .top) {
+                                    Text("User:")
+                                        .font(.headline)
+                                    Text("\(bulletin.userName)")
+                                        .font(.subheadline)
+                                }
+                                HStack(alignment: .top) {
+                                    Text("Location:")
+                                        .font(.headline)
+                                    Text("\(bulletin.geo.lat), \(bulletin.geo.lng)")
+                                        .font(.subheadline)
+                                }
                             }
                         }
                         .padding(.vertical, 12)

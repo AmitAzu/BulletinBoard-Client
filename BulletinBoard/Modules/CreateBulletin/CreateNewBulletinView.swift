@@ -7,7 +7,6 @@
 
 import SwiftUI
 import GoogleMaps
-import SDWebImageSwiftUI
 
 struct CreateNewBulletinView: View {
     @ObservedObject var viewModel: BulletinViewModel
@@ -17,7 +16,6 @@ struct CreateNewBulletinView: View {
     @State private var selectedLongitude: Double? = nil
     @State private var selectedLatitude: Double? = nil
     @State private var title: String = ""
-    @State private var bodyText: String = ""
     @State private var userName: String = ""
     @State private var isImagePickerPresented: Bool = false
     @State private var isMapViewPresented: Bool = false
@@ -54,19 +52,20 @@ struct CreateNewBulletinView: View {
             
             Section(header: Text("Details")) {
                 TextField("Title", text: $title)
-                TextField("Body", text: $bodyText)
                 TextField("User Name", text: $userName)
             }
             
             Button("Save") {
-                if !title.isEmpty && !bodyText.isEmpty && !userName.isEmpty && selectedImage != nil && selectedLatitude != nil {
+                if !title.isEmpty && !userName.isEmpty && selectedImage != nil && selectedLatitude != nil {
                     let lat = String(selectedLatitude ?? 0.0)
                     let lng = String(selectedLongitude ?? 0.0)
-                    let bulletin = BulletinData(url: selectedImageURL?.absoluteString ?? "",
-                                                geo: Geo(lat: lat, lng: lng),
-                                                title: title,
-                                                body: bodyText,
-                                                userName: userName)
+                    let id = UniqueIDGenerator.shared.generateUniqueID()
+                    let bulletin = Bulletin(
+                        id: id,
+                        url: selectedImageURL?.absoluteString ?? "",
+                        geo: .init(lat: lat, lng: lng),
+                        title: title,
+                        userName: userName)
                     viewModel.addNewBulletin(bulletin)
                     selectedTab = 0
                 } else {
@@ -99,3 +98,17 @@ struct CreateNewBulletinView: View {
 //        CreateBulletinView()
 //    }
 //}
+
+class UniqueIDGenerator {
+    static let shared = UniqueIDGenerator()
+    private var usedIDs = Set<Int>()
+
+    func generateUniqueID() -> Int {
+        var randomID: Int
+        repeat {
+            randomID = Int.random(in: 1...999999)
+        } while usedIDs.contains(randomID)
+        usedIDs.insert(randomID)
+        return randomID
+    }
+}

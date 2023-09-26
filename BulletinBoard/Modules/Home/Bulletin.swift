@@ -7,16 +7,35 @@
 
 import Foundation
 
-struct BulletinData: Codable, Identifiable {
-    var id = UUID()
+struct Bulletins: Codable {
+    let bulletins: [Bulletin]
+}
+
+struct Bulletin: Codable {
+    let id: Int
     let url: String
     let geo: Geo
     let title: String
-    let body: String
     let userName: String
+
+    enum CodingKeys: String, CodingKey {
+        case url = "imageUrl"
+        case geo, title, userName, id
+    }
+
+    struct Geo: Codable {
+        let lat: String
+        let lng: String
+    }
 }
 
-struct Geo: Codable {
-    let lat: String
-    let lng: String
+struct DeleteResponse: Codable {
+    let message: String?
+    let error: String?
+}
+
+struct UploadBulletinResponse: Codable {
+    let bulletin: Bulletin
+    let message: String
+    let error: String?
 }

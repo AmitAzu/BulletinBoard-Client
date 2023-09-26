@@ -9,7 +9,7 @@ import CoreLocation
 import Combine
 import SwiftUI
 
-class LocationService: NSObject, ObservableObject, CLLocationManagerDelegate {
+final class LocationService: NSObject, ObservableObject, CLLocationManagerDelegate {
     private var locationManager: CLLocationManager = CLLocationManager()
     private var cancellables = Set<AnyCancellable>()
     

@@ -8,20 +8,26 @@
 import Foundation
 import CoreLocation
 import SwiftUI
+import Combine
 
 class BulletinViewModel: ObservableObject {
+    static let shared = BulletinViewModel(locationService: LocationService(),
+                                          networkService: NetworkService())
     var locationService: LocationService
-    static let shared = BulletinViewModel(locationService: LocationService())
+    private var networkService: NetworkService
+    private var cancellables = Set<AnyCancellable>()
 
     @Published var searchText = ""
-    @Published var filteredBulletinList: [BulletinData] = []
-    @Published private var bulletinList: [BulletinData] = [] {
+    @Published var filteredBulletinList: [Bulletin] = []
+    @Published private var bulletinList: [Bulletin] = [] {
         didSet {
             filteredBulletinList = bulletinList
         }
     }
-
-    init(locationService: LocationService) {
+    
+    init(locationService: LocationService,
+         networkService: NetworkService) {
+        self.networkService = networkService
         self.locationService = locationService
         fetchBulletins()
     }
@@ -51,66 +57,61 @@ class BulletinViewModel: ObservableObject {
         }
     }
     
-    // TODO: SEND DELETE REQUEST
     func removeItemAtIndex(_ index: Int) {
-        bulletinList.remove(at: index)
+        guard index >= 0, index < bulletinList.count else {
+            print("Error deleting item: index out of range")
+            return
+        }
+        let idToDelete = bulletinList[index].id
+        let request = EndPointRequest(apiUrl: .deleteBulletin(id: idToDelete), method: .delete)
+        networkService.dataTaskPublisher(from: request, ofType: DeleteResponse.self)
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished: break
+                case .failure(let error):
+                    print("Error deleting item: \(error)")
+                }
+            }, receiveValue: { [weak self] response in
+                if let error = response.error {
+                    print("Error deleting item: \(error)")
+                } else {
+                    self?.bulletinList.remove(at: index)
+                }
+            })
+            .store(in: &cancellables)
     }
     
-    // TODO: SEND POST REQUEST
-    func addNewBulletin(_ bulletin: BulletinData) {
-        bulletinList.append(bulletin)
+    func addNewBulletin(_ bulletin: Bulletin) {
+        let request = EndPointRequest(apiUrl: .addBulletin, method: .post)
+        networkService.postDataTaskPublisher(to: request, ofType: UploadBulletinResponse.self, withData: bulletin)
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .failure(let error):
+                    print("upload bulletin failed: \(error)")
+                case .finished: break
+                }
+            }, receiveValue: { [weak self] response in
+                guard let self = self else { return }
+                bulletinList.insert(response.bulletin, at: 0)
+            })
+            .store(in: &cancellables)
     }
     
-    //TODO: SEND GET REQUEST
     func fetchBulletins() {
-        let bulletinList = [
-            BulletinData(
-                url: "https://via.placeholder.com/600/54176f",
-                geo: Geo(lat: "-33.8650", lng: "151.2094"),
-                title: "Title 4",
-                body: "Body 4",
-                userName: "User 4"
-            ),
-            BulletinData(
-                url: "https://via.placeholder.com/600/92c952",
-                geo: Geo(lat: "48.8566", lng: "2.3522"),
-                title: "Title 1",
-                body: "Body 1",
-                userName: "User 1"
-            ),
-            BulletinData(
-                url: "https://via.placeholder.com/600/771796",
-                geo: Geo(lat: "40.7128", lng: "-74.0060"),
-                title: "Title 2",
-                body: "Body 2",
-                userName: "User 2"
-            ),
-            BulletinData(
-                url: "https://via.placeholder.com/600/f66b97",
-                geo: Geo(lat: "-33.8650", lng: "151.2094"),
-                title: "Title 3",
-                body: "Body 3",
-                userName: "User 3"
-            ),
-            BulletinData(url: "https://via.placeholder.com/600/f66b97",
-                         geo: Geo(lat: "37.759062", lng: "-122.4243592"),
-                         title: "Sen Francisco",
-                         body: "body 4",
-                         userName: "User 4"
-                        ),
-            BulletinData(url: "https://via.placeholder.com/600/f66b97",
-                         geo: Geo(lat: "32.0717933", lng: "34.785018"),
-                         title: "Ramat gan",
-                         body: "Ramat gan",
-                         userName: "Ramat gan"
-                        ),
-            BulletinData(url: "https://via.placeholder.com/600/f66b97",
-                         geo: Geo(lat: "32.0717933", lng: "34.785018"),
-                         title: "Tel Aviv",
-                         body: "Tel Aviv",
-                         userName: "Tel Aviv"
-                        )
-        ]
-        self.bulletinList = bulletinList
+        let request = EndPointRequest(apiUrl: .getBulletins, method: .get)
+        networkService.dataTaskPublisher(from: request, ofType: Bulletins.self)
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error): print("error: \(error)")
+                    case .finished: break
+                    }
+                },
+                receiveValue: { [weak self] response in
+                    guard let self = self else { return }
+                    self.bulletinList = response.bulletins
+                }
+            )
+            .store(in: &cancellables)
     }
 }

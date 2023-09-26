@@ -20,7 +20,3 @@ struct MapView: View {
             .edgesIgnoringSafeArea(.all)
     }
 }
-
-//#Preview {
-//    MapView(viewModel: MapViewModel())
-//}

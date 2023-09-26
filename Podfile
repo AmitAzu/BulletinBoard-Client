@@ -1,3 +1,5 @@
+platform :ios, '15.0'
+
 target 'BulletinBoard' do
   use_frameworks!
   pod 'GoogleMaps', '~> 8.0.0'

@@ -10,7 +10,7 @@ import GoogleMaps
 
 struct GoogleMapView: UIViewRepresentable {
     @Binding var userLocation: CLLocation?
-    var bulletinList: [BulletinData]
+    var bulletinList: [Bulletin]
     
     func makeUIView(context: Context) -> GMSMapView {
         let camera = GMSCameraPosition.camera(withLatitude: userLocation?.coordinate.latitude ?? 0.0, longitude: userLocation?.coordinate.longitude ?? 0.0, zoom: 12.0)
@@ -19,10 +19,8 @@ struct GoogleMapView: UIViewRepresentable {
         
         for bulletin in bulletinList {
             let marker = GMSMarker()
-            marker.position = CLLocationCoordinate2D(latitude: Double(bulletin.geo.lat) ?? 0.0,
-                                                     longitude: Double(bulletin.geo.lng) ?? 0.0)
+            marker.position = CLLocationCoordinate2D(latitude: Double(bulletin.geo.lat) ?? 0.0, longitude: Double(bulletin.geo.lng) ?? 0.0)
             marker.title = bulletin.title
-            marker.snippet = bulletin.body
             marker.map = mapView
         }
         
@@ -42,6 +40,7 @@ struct SelectedLocationGoogleMapView: UIViewRepresentable {
     func makeUIView(context: Context) -> GMSMapView {
         let camera = GMSCameraPosition.camera(withLatitude: userLocation?.coordinate.latitude ?? 0.0, longitude: userLocation?.coordinate.longitude ?? 0.0, zoom: 12.0)
         let mapView = GMSMapView.map(withFrame: CGRect.zero, camera: camera)
+        mapView.isMyLocationEnabled = true
         mapView.delegate = context.coordinator
         return mapView
     }
