@@ -10,7 +10,6 @@ import SDWebImageSwiftUI
 
 struct HomeView: View {
     @ObservedObject var viewModel: BulletinViewModel
-    @State private var sortByLocation = false
     
     var body: some View {
         VStack {
@@ -20,8 +19,7 @@ struct HomeView: View {
                 }
             
             Button(action: {
-                viewModel.filteredBulletinList = viewModel.sortByDistanceFromUserLocation()
-                sortByLocation.toggle()
+                viewModel.sortByDistanceFromUserLocation()
             }) {
                 Text("Tap to sort bulletins by location")
             }
@@ -43,13 +41,13 @@ struct HomeView: View {
                                 .cornerRadius(10)
                             
                             VStack(alignment: .leading, spacing: 8) {
-                                Text("Location: \(bulletin.geo.lat), \(bulletin.geo.lng)")
-                                    .font(.subheadline)
                                 Text("Title: \(bulletin.title)")
                                     .font(.headline)
                                 Text("Body: \(bulletin.body)")
                                     .font(.body)
                                 Text("User: \(bulletin.userName)")
+                                    .font(.subheadline)
+                                Text("Location: \(bulletin.geo.lat), \(bulletin.geo.lng)")
                                     .font(.subheadline)
                             }
                         }
@@ -63,10 +61,6 @@ struct HomeView: View {
                 }
             }
             .listStyle(.plain)
-            .id(sortByLocation)
-        }
-        .onAppear {
-//            viewModel.requestWhenInUseAuthorization()
         }
     }
 }

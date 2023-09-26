@@ -72,14 +72,6 @@ struct CreateNewBulletinView: View {
                 } else {
                     isShowingAlert = true
                 }
-                //                let lat = String(selectedLatitude ?? 0.0)
-                //                let lng = String(selectedLongitude ?? 0.0)
-                //                let bulletin = BulletinData(url: selectedImageURL?.absoluteString ?? "",
-                //                                            geo: Geo(lat: lat, lng:lng ),
-                //                                            title: title,
-                //                                            body: bodyText,
-                //                                            userName: userName)
-                //                viewModel.addNewBulletin(bulletin)
             }
         }
         .sheet(isPresented: $isImagePickerPresented) {

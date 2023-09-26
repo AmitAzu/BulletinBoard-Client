@@ -26,8 +26,7 @@ class BulletinViewModel: ObservableObject {
         fetchBulletins()
     }
     
-    func sortByDistanceFromUserLocation() -> [BulletinData] {
-        locationService.test()
+    func sortByDistanceFromUserLocation() {
         bulletinList.sort { (bulletin1, bulletin2) -> Bool in
             let location1 = CLLocation(latitude: Double(bulletin1.geo.lat) ?? 0.0,
                                        longitude: Double(bulletin1.geo.lng) ?? 0.0)
@@ -39,7 +38,6 @@ class BulletinViewModel: ObservableObject {
             
             return distance1 < distance2
         }
-        return bulletinList
     }
     
     func filterBulletinList() {
