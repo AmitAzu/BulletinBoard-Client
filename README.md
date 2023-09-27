@@ -1,8 +1,5 @@
 # BulletinBoard-Client
 
-## get your private ip 
-ipconfig getifaddr en0
-
 ## Description
 The Bulletin Board iOS app is a SwiftUI-based application that allows users to import and manage a list of bulletins. Users can add new bulletins, delete existing ones, view all bulletins on a map, and share bulletins via WhatsApp. The app also requests location and local network permissions.
 
