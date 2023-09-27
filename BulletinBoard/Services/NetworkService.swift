@@ -100,7 +100,7 @@ enum ApiUrl {
     }
 }
 
-//TODO: Change it to your local host - set your private IP, and don't forget to change it in the Info.plist as well
+//MARK: Change it to your local host - set your private IP, and don't forget to change it in the Info.plist as well
 fileprivate enum NetworkUrl: String {
     case baseURL = "10.0.0.7"
 }
