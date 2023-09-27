@@ -19,7 +19,7 @@ struct BulletinBoardApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(locationService: locationService,
+            TabBar(locationService: locationService,
                         networkService: networkService)
             .preferredColorScheme(.dark)
         }

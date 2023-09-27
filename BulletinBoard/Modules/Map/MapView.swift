@@ -12,7 +12,7 @@ struct MapView: View {
     
     var body: some View {
         GoogleMapView(userLocation: $viewModel.locationService.userLocation,
-                      bulletinList: viewModel.filteredBulletinList)
+                      bulletinList: $viewModel.filteredBulletinList)
             .frame(minWidth: 0,
                    maxWidth: .infinity,
                    minHeight: 0,

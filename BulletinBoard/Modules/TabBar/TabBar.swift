@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  TabBar.swift
 //  BulletinBoard
 //
 //  Created by Amit Azulay on 23/09/2023.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct TabBar: View {
     @State var selectedTab: Int = 0
     var locationService: LocationService
     var networkService: NetworkService

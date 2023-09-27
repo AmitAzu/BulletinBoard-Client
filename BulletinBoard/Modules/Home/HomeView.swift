@@ -6,74 +6,49 @@
 //
 
 import SwiftUI
-import SDWebImageSwiftUI
 
 struct HomeView: View {
     @ObservedObject var viewModel: BulletinViewModel
+    @State private var selectedBulletin: Bulletin? = nil
     
     var body: some View {
-        VStack {
-            SearchBarView(searchText: $viewModel.searchText)
-                .onChange(of: viewModel.searchText) { newValue in
-                    viewModel.filterBulletinList()
-                }
-            
-            Button(action: {
-                viewModel.sortByDistanceFromUserLocation()
-            }) {
-                Text("Tap to sort bulletins by location")
+        if viewModel.showError {
+            ErrorView() {
+                viewModel.fetchBulletins()
             }
-            
-            List {
-                ForEach($viewModel.filteredBulletinList.indices, id: \.self) { index in
-                    if index < viewModel.filteredBulletinList.count {
-                        let bulletin = viewModel.filteredBulletinList[index]
-                        HStack(alignment: .center, spacing: 30) {
-                            let frame = UIScreen.main.bounds.width / 3
-                            WebImage(url: URL(string: bulletin.url))
-                                .renderingMode(.original)
-                                .resizable()
-                                .placeholder(Image(systemName: "photo"))
-                                .indicator(.activity)
-                                .transition(.fade(duration: 0.5))
-                                .scaledToFit()
-                                .frame(width: frame, height: frame)
-                                .cornerRadius(10)
-                            VStack(alignment: .leading, spacing: 8) {
-                                HStack(alignment: .top) {
-                                    Text("Title:")
-                                        .font(.headline)
-                                    Text("\(bulletin.title)")
-                                        .font(.subheadline)
-                                }
-                                HStack(alignment: .top) {
-                                    Text("User:")
-                                        .font(.headline)
-                                    Text("\(bulletin.userName)")
-                                        .font(.subheadline)
-                                }
-                                HStack(alignment: .top) {
-                                    Text("Location:")
-                                        .font(.headline)
-                                    Text("\(bulletin.geo.lat), \(bulletin.geo.lng)")
-                                        .font(.subheadline)
+        } else {
+            NavigationView {
+                VStack {
+                    SearchBarView(searchText: $viewModel.searchText)
+                        .onChange(of: viewModel.searchText) { newValue in
+                            viewModel.filterBulletinList()
+                        }
+                    Button(action: {
+                        viewModel.sortByDistanceFromUserLocation()
+                    }) {
+                        Text("Tap to sort bulletins by location")
+                    }
+                    List {
+                        ForEach($viewModel.filteredBulletinList.indices, id: \.self) { index in
+                            if index < viewModel.filteredBulletinList.count {
+                                let bulletin = viewModel.filteredBulletinList[index]
+                                
+                                NavigationLink(
+                                    destination: BulletinDetailView(bulletin: bulletin)
+                                ) {
+                                    BulletinCell(bulletin: bulletin)
                                 }
                             }
                         }
-                        .padding(.vertical, 12)
+                        .onDelete { indexSet in
+                            for index in indexSet {
+                                viewModel.removeItemAtIndex(index)
+                            }
+                        }
                     }
-                }
-                .onDelete { indexSet in
-                    for index in indexSet {
-                        viewModel.removeItemAtIndex(index)
-                    }
+                    .listStyle(.plain)
                 }
             }
-            .listStyle(.plain)
         }
     }
 }
-
-//#Preview {
-//    HomeView(viewModel: HomeViewModel(locationService: LocationService()))
-//}

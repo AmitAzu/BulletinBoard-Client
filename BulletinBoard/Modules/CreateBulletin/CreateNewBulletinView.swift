@@ -16,6 +16,7 @@ struct CreateNewBulletinView: View {
     @State private var selectedLongitude: Double? = nil
     @State private var selectedLatitude: Double? = nil
     @State private var title: String = ""
+    @State private var bodyText: String = ""
     @State private var userName: String = ""
     @State private var isImagePickerPresented: Bool = false
     @State private var isMapViewPresented: Bool = false
@@ -53,6 +54,7 @@ struct CreateNewBulletinView: View {
             Section(header: Text("Details")) {
                 TextField("Title", text: $title)
                 TextField("User Name", text: $userName)
+                TextField("Body", text: $bodyText)
             }
             
             Button("Save") {
@@ -65,7 +67,8 @@ struct CreateNewBulletinView: View {
                         url: selectedImageURL?.absoluteString ?? "",
                         geo: .init(lat: lat, lng: lng),
                         title: title,
-                        userName: userName)
+                        userName: userName,
+                        body: bodyText)
                     viewModel.addNewBulletin(bulletin)
                     selectedTab = 0
                 } else {
@@ -90,25 +93,5 @@ struct CreateNewBulletinView: View {
                 message: Text("Please fill in all fields"),
                 dismissButton: .default(Text("OK")))
         }
-    }
-}
-
-//struct CreateBulletinView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        CreateBulletinView()
-//    }
-//}
-
-class UniqueIDGenerator {
-    static let shared = UniqueIDGenerator()
-    private var usedIDs = Set<Int>()
-
-    func generateUniqueID() -> Int {
-        var randomID: Int
-        repeat {
-            randomID = Int.random(in: 1...999999)
-        } while usedIDs.contains(randomID)
-        usedIDs.insert(randomID)
-        return randomID
     }
 }

@@ -11,15 +11,15 @@ import SwiftUI
 import Combine
 
 class BulletinViewModel: ObservableObject {
-    static let shared = BulletinViewModel(locationService: LocationService(),
-                                          networkService: NetworkService())
+    static let shared = BulletinViewModel(locationService: LocationService(), networkService: NetworkService())
     var locationService: LocationService
     private var networkService: NetworkService
     private var cancellables = Set<AnyCancellable>()
-
+    
+    @Published var showError: Bool = false
     @Published var searchText = ""
     @Published var filteredBulletinList: [Bulletin] = []
-    @Published private var bulletinList: [Bulletin] = [] {
+    private var bulletinList: [Bulletin] = [] {
         didSet {
             filteredBulletinList = bulletinList
         }
@@ -92,7 +92,11 @@ class BulletinViewModel: ObservableObject {
                 }
             }, receiveValue: { [weak self] response in
                 guard let self = self else { return }
-                bulletinList.insert(response.bulletin, at: 0)
+                if let error = response.error {
+                    print("upload bulletin failed: \(error)")
+                } else if let newBulletin = response.bulletin {
+                    bulletinList.insert(newBulletin, at: 0)
+                }
             })
             .store(in: &cancellables)
     }
@@ -101,14 +105,18 @@ class BulletinViewModel: ObservableObject {
         let request = EndPointRequest(apiUrl: .getBulletins, method: .get)
         networkService.dataTaskPublisher(from: request, ofType: Bulletins.self)
             .sink(
-                receiveCompletion: { completion in
+                receiveCompletion: { [weak self] completion in
                     switch completion {
-                    case .failure(let error): print("error: \(error)")
+                    case .failure(let error):
+                        guard let self = self else { return }
+                        self.showError = true
+                        print("error: \(error)")
                     case .finished: break
                     }
                 },
                 receiveValue: { [weak self] response in
                     guard let self = self else { return }
+                    self.showError = false
                     self.bulletinList = response.bulletins
                 }
             )

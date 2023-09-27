@@ -17,10 +17,11 @@ struct Bulletin: Codable {
     let geo: Geo
     let title: String
     let userName: String
-
+    let body: String
+    
     enum CodingKeys: String, CodingKey {
         case url = "imageUrl"
-        case geo, title, userName, id
+        case geo, title, userName, id, body
     }
 
     struct Geo: Codable {
@@ -35,7 +36,7 @@ struct DeleteResponse: Codable {
 }
 
 struct UploadBulletinResponse: Codable {
-    let bulletin: Bulletin
-    let message: String
+    let bulletin: Bulletin?
+    let message: String?
     let error: String?
 }

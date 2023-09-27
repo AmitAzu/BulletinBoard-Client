@@ -10,12 +10,22 @@ import GoogleMaps
 
 struct GoogleMapView: UIViewRepresentable {
     @Binding var userLocation: CLLocation?
-    var bulletinList: [Bulletin]
+    @Binding var bulletinList: [Bulletin]
     
     func makeUIView(context: Context) -> GMSMapView {
         let camera = GMSCameraPosition.camera(withLatitude: userLocation?.coordinate.latitude ?? 0.0, longitude: userLocation?.coordinate.longitude ?? 0.0, zoom: 12.0)
         let mapView = GMSMapView.map(withFrame: CGRect.zero, camera: camera)
         mapView.isMyLocationEnabled = true
+        updateMarkers(mapView: mapView)
+        return mapView
+    }
+    
+    func updateUIView(_ uiView: GMSMapView, context: Context) {
+        updateMarkers(mapView: uiView)
+    }
+    
+    private func updateMarkers(mapView: GMSMapView) {
+        mapView.clear()
         
         for bulletin in bulletinList {
             let marker = GMSMarker()
@@ -23,11 +33,6 @@ struct GoogleMapView: UIViewRepresentable {
             marker.title = bulletin.title
             marker.map = mapView
         }
-        
-        return mapView
-    }
-    
-    func updateUIView(_ uiView: GMSMapView, context: Context) {
     }
 }
 
